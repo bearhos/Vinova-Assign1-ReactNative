@@ -10,9 +10,14 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "react": "17.0.2",
+    "formik": "^2.2.9",
+    "react": "^17.1.0",
+    "react-dom": "^16.8.0",
     "react-native": "0.68.0",
-    "react-native-vector-icons": "^9.1.0"
+    "react-native-flash-message": "^0.2.1",
+    "react-native-vector-icons": "^9.1.0",
+    "styled-components": "^5.8.5",
+    "yup": "^0.32.11"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",

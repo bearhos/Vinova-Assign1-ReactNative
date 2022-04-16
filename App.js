@@ -1,17 +1,57 @@
-import { Image, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { Button, Image, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import React, { useState } from 'react'
 import cover from './assest/Cover.png'
 import logo from './assest/Logo.png'
+import imageError from './assest/imageError.png'
 import Icon from 'react-native-vector-icons/Ionicons';
 import Input from './Components/input/Input';
+import Button from './Components/button/Button'
+import { Formik } from 'formik';
+import { LoginSchema } from './Components/Validation';
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
+ 
 
 const App = () => {
-  const [focus, setFocus] = useState(false)
-  const customStyle = focus ? [styles.inputForcus,styles.input] : styles.input
+  const [showPassword, setShowPassword] = useState(true)
   const navigate = "<"
+  const ShowMessage = (message, description, type) =>{
+    showMessage({
+      message: message,
+      description: description,
+      type: type,
+      onPress: () => {
+        hideMessage()
+      },
+  })
+  }
+  const login = (values) =>{
+ if (values.email ==='admin@gmail.com' && values.password ==='admin'){
+    ShowMessage('Sucess','Login Sucess', 'success')
+ }
+ else{
+  ShowMessage('Error','Wrong Password or Email', 'danger')
+ }
+  }
 
   return (
-    <View style={styles.container}>
+    
+      <Formik
+     initialValues={{ email: '', password: '' }}
+     onSubmit={values => login(values) }
+     validationSchema = {LoginSchema}
+    //  validateOnChange={false}
+     
+   >
+     {({handleChange,
+        handleBlur,
+        handleSubmit,
+        values,
+        errors,
+        touched,
+        isValid, }) => (
+<>
+<View style={styles.container}>
+      
       <View style={styles.navigate}>
           <Text style={styles.Iconnavigate} > {navigate} </Text>
       </View>
@@ -21,22 +61,40 @@ const App = () => {
     </Image>
         </View>
         <View style={styles.Imagelogo}>
-        <Image source={logo} resizeMode="cover" style={styles.imageRabbit}>
+        
+        <Image source={isValid ? logo : imageError } resizeMode="cover" style={[styles.imageRabbit, {marginLeft: !isValid ? 70 : 0},{marginBottom: !isValid ? 20 : 0}]}>
     </Image>
+        
         </View>
       </View>
       <View style={styles.bottom}>
 
-      <Input iconname={'mail'} placeholder="Enter Username" />
+      <Input 
+      label="Email" 
+      iconname={'mail'} 
+      field='email'
+      autoCapitalize="words"
+      values={values}
+      touched={touched}
+      errors={errors}
+      handleChange={handleChange}
+      handleBlur={handleBlur}
+      showMessage={showMessage}
+      hideMessage={hideMessage}
+      isValid={isValid}  />
       <View>
 
-      <Input iconname={'key'} placeholder="Enter Password" secureTextEntry={true} style={{
+      <Input secureTextEntry={showPassword ? true : false} label="Password" iconname={'key'} field='password'  values={values}
+      touched={touched}
+      errors={errors}
+      handleChange={handleChange}
+      handleBlur={handleBlur} 
+      showMessage={showMessage}
+      hideMessage={hideMessage} 
+      style={{
         position: 'relative',
-      }} />
-      
-      
-
-      <Icon name='md-eye-outline' size={30} color='#304D95' style={{
+      }}  />
+      <Icon name='md-eye-outline' size={30} color='#304D95' onPress={()=> setShowPassword(!showPassword)} style={{
         position: 'absolute',
         right: 45,
         top: 13,
@@ -45,11 +103,8 @@ const App = () => {
       }}/>
 
       </View>
-        <TouchableOpacity>
-        <View style={[styles.input,styles.button]}>
-          <Text style={styles.buttonText} >Login</Text>
-        </View>
-        </TouchableOpacity>
+        <Button handleSubmit={handleSubmit}/>
+
       <Text style={{
         fontSize: 15,
         color: '#333333',
@@ -58,10 +113,16 @@ const App = () => {
       }}>Forgot Password ?
         <Text style={{
           fontWeight: '800'
-        }}> Click Here</Text>
+        }}> Click Here  </Text>
         </Text>
       </View>
-    </View>
+     
+      <FlashMessage position="top" textStyle={{textAlign:'center', fontSize:16}}  titleStyle={{textAlign:'center', fontSize:15}}  />
+     </View>
+      </>
+     )}
+     </Formik>
+    
   )
 }
 
@@ -167,6 +228,6 @@ const styles = StyleSheet.create({
     top: 12,
     left: 50,
     position: 'absolute'
-  }
+  },
   
 })
